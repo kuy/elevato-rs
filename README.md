@@ -1,26 +1,15 @@
-# elevators
+# elevato-rs
 
-## How to run
+An Elevator Simulator written in [Rust](https://www.rust-lang.org/) with [Amethyst](https://amethyst.rs/) game engine.
 
-To run the game, use
+## Requirements
 
-```
-cargo run --features "vulkan"
-```
+- Rust 1.36.x
+  - Not supported Rust nightly
+- macOS Mojave 10.14.x
 
-on Windows and Linux, and
-
-```
-cargo run --features "metal"
-```
-
-on macOS.
-
-For building without any graphics backend, you can use
+## Run
 
 ```
-cargo run --features "empty"
+cargo run
 ```
-
-but be aware that as soon as you need any rendering you won't be able to run your game when using
-the `empty` feature.

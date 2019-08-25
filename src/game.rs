@@ -1,6 +1,5 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
-    core::timing::Time,
     core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
@@ -23,7 +22,7 @@ impl SimpleState for Game {
 
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
-        initialize_cargos(world, self.sprite_sheet_handle.clone().unwrap());
+        initialize_cargoes(world, self.sprite_sheet_handle.clone().unwrap());
         initialize_camera(world);
     }
 }
@@ -63,23 +62,32 @@ fn initialize_camera(world: &mut World) {
 
 pub const CARGO_HEIGHT: f32 = 12.0;
 pub const CARGO_WIDTH: f32 = 8.0;
+pub const CARGO_VELOCITY: f32 = 10.0;
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum Direction {
+    Up,
+    Down,
+}
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Status {
     Stopped,
-    Moving,
+    Moving(Direction),
 }
 
 pub struct Cargo {
     pub floor: i32,
     pub status: Status,
+    pub request: Vec<i32>,
 }
 
 impl Cargo {
     fn new() -> Cargo {
         Cargo {
             floor: 0,
-            status: Status::Stopped,
+            status: Status::Moving(Direction::Up),
+            request: vec![],
         }
     }
 }
@@ -88,7 +96,7 @@ impl Component for Cargo {
     type Storage = DenseVecStorage<Self>;
 }
 
-fn initialize_cargos(world: &mut World, sprite_sheet: Handle<SpriteSheet>) {
+fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>) {
     let mut transform = Transform::default();
     transform.set_translation_xyz(CARGO_WIDTH * 0.5, CARGO_HEIGHT * 0.5, 0.0);
 

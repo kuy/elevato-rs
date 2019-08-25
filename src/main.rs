@@ -10,6 +10,7 @@ use amethyst::{
 };
 
 mod game;
+mod systems;
 
 use game::Game;
 
@@ -20,6 +21,7 @@ fn main() -> amethyst::Result<()> {
     let display_config_path = app_root.join("config").join("display.ron");
 
     let game_data = GameDataBuilder::default()
+        .with(systems::ElevatingSystem, "elevating_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
