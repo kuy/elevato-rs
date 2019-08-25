@@ -7,17 +7,19 @@ use amethyst::{
 pub enum Status {
     Idle,
     GoTo(i32),
-    Waiting,
+    Waiting(i32),
 }
 
 pub struct Passenger {
     pub status: Status,
+    pub floor: i32,
 }
 
 impl Passenger {
-    fn new() -> Passenger {
+    fn new(current: i32, dest: i32) -> Passenger {
         Passenger {
-            status: Status::GoTo(3),
+            status: Status::GoTo(dest),
+            floor: current,
         }
     }
 }
@@ -27,5 +29,5 @@ impl Component for Passenger {
 }
 
 pub fn initialize_passengers(world: &mut World) {
-    world.create_entity().with(Passenger::new()).build();
+    world.create_entity().with(Passenger::new(2, 4)).build();
 }

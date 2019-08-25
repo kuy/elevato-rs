@@ -16,14 +16,11 @@ impl<'s> System<'s> for ElevatingSystem {
     fn run(&mut self, (mut locals, cargoes, time): Self::SystemData) {
         for (cargo, local) in (&cargoes, &mut locals).join() {
             if let Status::Moving(dir) = &cargo.status {
-                match dir {
-                    Direction::Up => {
-                        local.prepend_translation_y(CARGO_VELOCITY * time.delta_seconds())
-                    }
-                    Direction::Down => {
-                        local.prepend_translation_y(-CARGO_VELOCITY * time.delta_seconds())
-                    }
+                let velocity = match dir {
+                    Direction::Up => CARGO_VELOCITY,
+                    Direction::Down => -CARGO_VELOCITY,
                 };
+                local.prepend_translation_y(velocity * time.delta_seconds());
             }
         }
     }

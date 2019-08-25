@@ -1,5 +1,5 @@
 use amethyst::{
-    assets::{Handle},
+    assets::Handle,
     core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
@@ -25,7 +25,8 @@ pub enum Status {
 pub struct Cargo {
     pub floor: i32,
     pub status: Status,
-    pub request: Vec<i32>,
+    pub enter: Vec<(i32, Direction)>,
+    pub leave: Vec<i32>,
 }
 
 impl Cargo {
@@ -33,7 +34,8 @@ impl Cargo {
         Cargo {
             floor: 0,
             status: Status::Stopped,
-            request: vec![],
+            enter: vec![],
+            leave: vec![],
         }
     }
 }

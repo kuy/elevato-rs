@@ -1,6 +1,6 @@
 use amethyst::ecs::{Join, System, WriteStorage};
 
-use crate::cargo::Cargo;
+use crate::cargo::{Cargo, Direction};
 use crate::passenger::{Passenger, Status};
 
 pub struct BehaviorSystem;
@@ -10,16 +10,24 @@ impl<'s> System<'s> for BehaviorSystem {
 
     fn run(&mut self, (mut passengers, mut cargoes): Self::SystemData) {
         for (passenger,) in (&mut passengers,).join() {
-            if let Status::GoTo(floor) = passenger.status {
-                println!("Go to {}", floor);
+            if let Status::GoTo(dest) = passenger.status {
+                println!("[Passenger] Go to {} from {}", dest, passenger.floor);
 
-                // TODO: Support multiple cargoes
                 for (cargo,) in (&mut cargoes,).join() {
-                    cargo.request.push(floor);
+                    let req = if dest > passenger.floor {
+                        (passenger.floor, Direction::Up)
+                    } else if dest < passenger.floor {
+                        (passenger.floor, Direction::Down)
+                    } else {
+                        continue; // You're there :)
+                    };
+                    cargo.enter.push(req);
+
+                    // TODO: Support multiple cargoes
                     break;
                 }
 
-                passenger.status = Status::Waiting;
+                passenger.status = Status::Waiting(dest);
             }
         }
     }

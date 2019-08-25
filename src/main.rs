@@ -26,6 +26,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::ElevatingSystem, "elevating_system", &[])
         .with(systems::ControlSystem, "control_system", &[])
         .with(systems::BehaviorSystem, "behavior_system", &[])
+        .with(systems::UpdateFloorSystem, "floor_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
