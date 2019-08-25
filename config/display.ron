@@ -1,0 +1,4 @@
+(
+  title: "Elevato-rs",
+  dimensions: Some((500, 500)),
+)
