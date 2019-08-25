@@ -10,6 +10,7 @@ use amethyst::{
 };
 
 mod game;
+mod passenger;
 mod systems;
 
 use game::Game;
@@ -22,6 +23,8 @@ fn main() -> amethyst::Result<()> {
 
     let game_data = GameDataBuilder::default()
         .with(systems::ElevatingSystem, "elevating_system", &[])
+        .with(systems::ControlSystem, "control_system", &[])
+        .with(systems::BehaviorSystem, "behavior_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
