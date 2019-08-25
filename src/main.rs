@@ -9,6 +9,7 @@ use amethyst::{
     utils::application_root_dir,
 };
 
+mod cargo;
 mod game;
 mod passenger;
 mod systems;

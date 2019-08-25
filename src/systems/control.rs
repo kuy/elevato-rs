@@ -1,6 +1,6 @@
 use amethyst::ecs::{Join, System, WriteStorage};
 
-use crate::game::{Cargo, Direction, Status};
+use crate::cargo::{Cargo, Direction, Status};
 
 pub struct ControlSystem;
 

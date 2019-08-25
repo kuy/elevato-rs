@@ -1,6 +1,6 @@
 use amethyst::ecs::{Join, System, WriteStorage};
 
-use crate::game::Cargo;
+use crate::cargo::Cargo;
 use crate::passenger::{Passenger, Status};
 
 pub struct BehaviorSystem;

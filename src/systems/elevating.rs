@@ -2,7 +2,7 @@ use amethyst::core::timing::Time;
 use amethyst::core::Transform;
 use amethyst::ecs::{Join, Read, ReadStorage, System, WriteStorage};
 
-use crate::game::{Cargo, Direction, Status, CARGO_VELOCITY};
+use crate::cargo::{Cargo, Direction, Status, CARGO_VELOCITY};
 
 pub struct ElevatingSystem;
 
