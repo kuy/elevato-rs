@@ -8,6 +8,7 @@ pub enum Status {
     Idle,
     GoTo(i32),
     Waiting(i32),
+    Moving(i32),
 }
 
 pub struct Passenger {
@@ -30,4 +31,5 @@ impl Component for Passenger {
 
 pub fn initialize_passengers(world: &mut World) {
     world.create_entity().with(Passenger::new(2, 4)).build();
+    world.create_entity().with(Passenger::new(6, 1)).build();
 }

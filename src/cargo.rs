@@ -38,6 +38,65 @@ impl Cargo {
             leave: vec![],
         }
     }
+
+    pub fn move_to(&mut self, target: &i32) {
+        let dir = if target > &self.floor {
+            Direction::Up
+        } else if target < &self.floor {
+            Direction::Down
+        } else {
+            return; // Noop
+        };
+        self.status = Status::Moving(dir);
+    }
+
+    pub fn remove_from_enter(&mut self, floor: &i32) {
+        let mut i = 0;
+        while i != self.enter.len() {
+            let (target, _) = &self.enter[i];
+            if target == floor {
+                self.enter.remove(i);
+            } else {
+                i += 1;
+            }
+        }
+    }
+
+    pub fn remove_from_leave(&mut self, floor: &i32) {
+        let mut i = 0;
+        while i != self.leave.len() {
+            let target = &self.leave[i];
+            if target == floor {
+                self.leave.remove(i);
+            } else {
+                i += 1;
+            }
+        }
+    }
+
+    pub fn arrived_floor_in_enter(&self) -> Option<i32> {
+        if let Some((target, _)) = self.enter.first() {
+            if target == &self.floor {
+                Some(*target)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
+
+    pub fn arrived_floor_in_leave(&self) -> Option<i32> {
+        if let Some(target) = self.leave.first() {
+            if target == &self.floor {
+                Some(*target)
+            } else {
+                None
+            }
+        } else {
+            None
+        }
+    }
 }
 
 impl Component for Cargo {
