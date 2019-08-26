@@ -26,7 +26,7 @@ impl SimpleState for Game {
         world.register::<FloorDoor>();
 
         initialize_cargoes(world, self.sprite_sheet_handle.clone().unwrap());
-        initialize_floor_doors(world);
+        initialize_floor_doors(world, self.sprite_sheet_handle.clone().unwrap());
         initialize_passengers(world);
         initialize_camera(world);
     }
