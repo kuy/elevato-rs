@@ -4,6 +4,7 @@ use amethyst::{
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
     renderer::{SpriteRender, SpriteSheet},
+    ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
 use crate::cargo::CARGO_HEIGHT;
@@ -27,7 +28,7 @@ impl Component for FloorDoor {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub fn initialize_floor_doors(world: &mut World, sprite_sheet: Handle<SpriteSheet>) {
+pub fn initialize_floor_doors(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
         sprite_number: 1,
@@ -41,11 +42,29 @@ pub fn initialize_floor_doors(world: &mut World, sprite_sheet: Handle<SpriteShee
             0.0,
         );
 
+        let ui_transform = UiTransform::new(
+            format!("floor-{}", floor),
+            Anchor::BottomLeft,
+            Anchor::Middle,
+            40.,
+            0.,
+            1.,
+            50.,
+            25.,
+        );
+
         world
             .create_entity()
             .with(sprite_render.clone())
             .with(FloorDoor::new(floor))
             .with(transform)
+            .with(UiText::new(
+                font.clone(),
+                "0".to_string(),
+                [1., 1., 1., 1.],
+                30.,
+            ))
+            .with(ui_transform)
             .build();
     }
 }

@@ -3,6 +3,7 @@ use amethyst::{
     core::transform::Transform,
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
+    ui::{FontHandle, TtfFormat},
 };
 
 use crate::cargo::initialize_cargoes;
@@ -15,6 +16,7 @@ pub const ARENA_WIDTH: f32 = 100.0;
 #[derive(Default)]
 pub struct Game {
     sprite_sheet_handle: Option<Handle<SpriteSheet>>,
+    font_handle: Option<FontHandle>,
 }
 
 impl SimpleState for Game {
@@ -22,11 +24,20 @@ impl SimpleState for Game {
         let world = data.world;
 
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
+        self.font_handle.replace(load_font(world));
 
         world.register::<FloorDoor>();
 
-        initialize_cargoes(world, self.sprite_sheet_handle.clone().unwrap());
-        initialize_floor_doors(world, self.sprite_sheet_handle.clone().unwrap());
+        initialize_cargoes(
+            world,
+            self.sprite_sheet_handle.clone().unwrap(),
+            self.font_handle.clone().unwrap(),
+        );
+        initialize_floor_doors(
+            world,
+            self.sprite_sheet_handle.clone().unwrap(),
+            self.font_handle.clone().unwrap(),
+        );
         initialize_passengers(world);
         initialize_camera(world);
     }
@@ -52,6 +63,12 @@ fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
         (),
         &sprite_sheet_store,
     )
+}
+
+fn load_font(world: &mut World) -> FontHandle {
+    world
+        .read_resource::<Loader>()
+        .load("font/square.ttf", TtfFormat, (), &world.read_resource())
 }
 
 fn initialize_camera(world: &mut World) {

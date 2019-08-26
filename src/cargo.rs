@@ -1,10 +1,10 @@
 use amethyst::{
-    assets::{Handle, Loader},
+    assets::Handle,
     core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
     renderer::{SpriteRender, SpriteSheet},
-    ui::{Anchor, TtfFormat, UiText, UiTransform},
+    ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
 pub const CARGO_HEIGHT: f32 = 12.0;
@@ -108,14 +108,7 @@ impl Component for Cargo {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>) {
-    let font = world.read_resource::<Loader>().load(
-        "font/square.ttf",
-        TtfFormat,
-        (),
-        &world.read_resource(),
-    );
-
+pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
         sprite_number: 0,
