@@ -5,8 +5,9 @@ use amethyst::{
     renderer::{Camera, ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
 };
 
-use crate::passenger::initialize_passengers;
 use crate::cargo::initialize_cargoes;
+use crate::floor_door::{initialize_floor_doors, FloorDoor};
+use crate::passenger::initialize_passengers;
 
 pub const ARENA_HEIGHT: f32 = 100.0;
 pub const ARENA_WIDTH: f32 = 100.0;
@@ -22,8 +23,11 @@ impl SimpleState for Game {
 
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
 
-        initialize_passengers(world);
+        world.register::<FloorDoor>();
+
         initialize_cargoes(world, self.sprite_sheet_handle.clone().unwrap());
+        initialize_floor_doors(world);
+        initialize_passengers(world);
         initialize_camera(world);
     }
 }

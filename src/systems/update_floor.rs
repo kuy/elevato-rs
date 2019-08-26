@@ -14,7 +14,7 @@ impl<'s> System<'s> for UpdateFloorSystem {
                 let y = local.translation().y;
                 let res = (y / CARGO_HEIGHT).floor() as i32;
                 if res != cargo.floor {
-                    println!("[Cargo: moving] Moved {:?}: #{}", dir, res);
+                    println!("[Cargo #{}: moving] Moved {:?}: #{}", cargo.id, dir, res);
                     cargo.floor = res;
                 }
             }

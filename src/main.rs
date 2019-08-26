@@ -6,10 +6,13 @@ use amethyst::{
         types::DefaultBackend,
         RenderingBundle,
     },
+    ui::{RenderUi, UiBundle},
     utils::application_root_dir,
+    input::StringBindings,
 };
 
 mod cargo;
+mod floor_door;
 mod game;
 mod passenger;
 mod systems;
@@ -33,9 +36,11 @@ fn main() -> amethyst::Result<()> {
                     RenderToWindow::from_config_path(display_config_path)
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
-                .with_plugin(RenderFlat2D::default()),
+                .with_plugin(RenderFlat2D::default())
+                .with_plugin(RenderUi::default()),
         )?
-        .with_bundle(TransformBundle::new())?;
+        .with_bundle(TransformBundle::new())?
+        .with_bundle(UiBundle::<StringBindings>::new())?;
 
     let asset_dir = app_root.join("assets");
     let mut game = Application::new(asset_dir, Game::default(), game_data)?;

@@ -12,7 +12,7 @@ impl<'s> System<'s> for ControlSystem {
             match &cargo.status {
                 Status::Stopped => {
                     if !cargo.enter.is_empty() {
-                        println!("[Cargo: stopped] enter: {:?}", cargo.enter);
+                        println!("[Cargo #{}: stopped] enter: {:?}", cargo.id, cargo.enter);
 
                         for (target, _) in &cargo.enter {
                             let dir = if target > &cargo.floor {
@@ -28,7 +28,7 @@ impl<'s> System<'s> for ControlSystem {
                     }
 
                     if !cargo.leave.is_empty() {
-                        println!("[Cargo: stopped] leave: {:?}", cargo.leave);
+                        println!("[Cargo #{}: stopped] leave: {:?}", cargo.id, cargo.leave);
 
                         for target in &cargo.leave {
                             let dir = if target > &cargo.floor {
@@ -47,19 +47,19 @@ impl<'s> System<'s> for ControlSystem {
                 Status::Moving(_) => {
                     if !cargo.enter.is_empty() {
                         if let Some(floor) = cargo.arrived_floor_in_enter() {
-                            println!("[Cargo: stopped] arrived at #{}", floor);
+                            println!("[Cargo #{}: stopped] arrived at #{}", cargo.id, floor);
                             cargo.status = Status::Stopped;
                             cargo.remove_from_enter(&floor);
-                            println!("[Cargo: stopped] enter: {:?}", cargo.enter);
+                            println!("[Cargo #{}: stopped] enter: {:?}", cargo.id, cargo.enter);
                         }
                     }
 
                     if !cargo.leave.is_empty() {
                         if let Some(floor) = cargo.arrived_floor_in_leave() {
-                            println!("[Cargo: stopped] arrived at #{}", floor);
+                            println!("[Cargo #{}: stopped] arrived at #{}", cargo.id, floor);
                             cargo.status = Status::Stopped;
                             cargo.remove_from_leave(&floor);
-                            println!("[Cargo: stopped] leave: {:?}", cargo.leave);
+                            println!("[Cargo #{}: stopped] leave: {:?}", cargo.id, cargo.leave);
                         }
                     }
                 }
