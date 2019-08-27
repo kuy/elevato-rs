@@ -11,11 +11,11 @@ impl<'s> System<'s> for UpdateFloorSystem {
     fn run(&mut self, (mut cargoes, locals): Self::SystemData) {
         for (cargo, local) in (&mut cargoes, &locals).join() {
             if let Status::Moving(dir) = &cargo.status {
-                let y = local.translation().y;
-                let res = (y / CARGO_HEIGHT).floor() as i32;
-                if res != cargo.floor {
-                    println!("[Cargo #{}: moving] Moved {:?}: #{}", cargo.id, dir, res);
-                    cargo.floor = res;
+                let bottom = local.translation().y - CARGO_HEIGHT * 0.5;
+                let floor = (bottom / CARGO_HEIGHT).floor() as i32;
+                if floor != cargo.floor {
+                    println!("[Cargo #{}: moving] Moved {:?}: #{}", cargo.id, dir, floor);
+                    cargo.floor = floor;
                 }
             }
         }
