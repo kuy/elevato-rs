@@ -7,6 +7,7 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
+pub const NUM_OF_CARGOS: i32 = 3;
 pub const CARGO_HEIGHT: f32 = 12.0;
 pub const CARGO_WIDTH: f32 = 8.0;
 pub const CARGO_VELOCITY: f32 = 10.0;
@@ -27,8 +28,8 @@ pub struct Cargo {
     pub id: i32,
     pub floor: i32,
     pub status: Status,
-    pub enter: Vec<(i32, Direction)>,
-    pub leave: Vec<i32>,
+    pub enter: Vec<(i32, i32, Direction)>, // (passenger id, requested floor, dir)
+    pub leave: Vec<(i32, i32)>,            // (passenger id, dest floor)
     pub count: i32,
 }
 
@@ -58,7 +59,7 @@ impl Cargo {
     pub fn remove_from_enter(&mut self, floor: &i32) {
         let mut i = 0;
         while i != self.enter.len() {
-            let (target, _) = &self.enter[i];
+            let (_, target, _) = &self.enter[i];
             if target == floor {
                 self.enter.remove(i);
             } else {
@@ -70,7 +71,7 @@ impl Cargo {
     pub fn remove_from_leave(&mut self, floor: &i32) {
         let mut i = 0;
         while i != self.leave.len() {
-            let target = &self.leave[i];
+            let (_, target) = &self.leave[i];
             if target == floor {
                 self.leave.remove(i);
             } else {
@@ -80,7 +81,7 @@ impl Cargo {
     }
 
     pub fn arrived_floor_in_enter(&self) -> Option<i32> {
-        if let Some((target, _)) = self.enter.first() {
+        if let Some((_, target, _)) = self.enter.first() {
             if target == &self.floor {
                 Some(*target)
             } else {
@@ -92,7 +93,7 @@ impl Cargo {
     }
 
     pub fn arrived_floor_in_leave(&self) -> Option<i32> {
-        if let Some(target) = self.leave.first() {
+        if let Some((_, target)) = self.leave.first() {
             if target == &self.floor {
                 Some(*target)
             } else {
@@ -114,7 +115,7 @@ pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>, 
         sprite_number: 0,
     };
 
-    for n in 1..2 {
+    for n in 1..(NUM_OF_CARGOS + 1) {
         let mut transform = Transform::default();
         transform.set_translation_xyz(
             (n as f32) * CARGO_WIDTH + CARGO_WIDTH * 0.5,

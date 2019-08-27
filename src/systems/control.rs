@@ -14,7 +14,7 @@ impl<'s> System<'s> for ControlSystem {
                     if !cargo.enter.is_empty() {
                         println!("[Cargo #{}: stopped] enter: {:?}", cargo.id, cargo.enter);
 
-                        for (target, _) in &cargo.enter {
+                        for (_, target, _) in &cargo.enter {
                             let dir = if target > &cargo.floor {
                                 Direction::Up
                             } else if target < &cargo.floor {
@@ -30,7 +30,7 @@ impl<'s> System<'s> for ControlSystem {
                     if !cargo.leave.is_empty() {
                         println!("[Cargo #{}: stopped] leave: {:?}", cargo.id, cargo.leave);
 
-                        for target in &cargo.leave {
+                        for (_, target) in &cargo.leave {
                             let dir = if target > &cargo.floor {
                                 Direction::Up
                             } else if target < &cargo.floor {
