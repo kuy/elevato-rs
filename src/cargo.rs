@@ -9,7 +9,7 @@ use amethyst::{
 
 use crate::passenger::Passenger;
 
-pub const NUM_OF_CARGOS: i32 = 3;
+pub const NUM_OF_CARGOS: i32 = 6;
 pub const CARGO_HEIGHT: f32 = 12.0;
 pub const CARGO_WIDTH: f32 = 8.0;
 pub const CARGO_VELOCITY: f32 = 10.0;

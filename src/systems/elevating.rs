@@ -8,7 +8,7 @@ use amethyst::{
 use crate::cargo::{Cargo, Direction, Status, CARGO_VELOCITY};
 use crate::game::ARENA_HEIGHT;
 
-const OFFSET: f32 = 8.0;
+const OFFSET: f32 = 8.;
 
 pub struct ElevatingSystem;
 

@@ -1,6 +1,6 @@
 use amethyst::{
     assets::{AssetStorage, Handle, Loader},
-    core::transform::Transform,
+    core::{timing::Time, transform::Transform},
     prelude::*,
     renderer::{Camera, ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{FontHandle, TtfFormat},
@@ -8,13 +8,16 @@ use amethyst::{
 
 use crate::cargo::initialize_cargoes;
 use crate::floor_door::{initialize_floor_doors, FloorDoor};
-use crate::passenger::initialize_passengers;
+use crate::passenger::spawn_passenger;
 
-pub const ARENA_HEIGHT: f32 = 100.0;
-pub const ARENA_WIDTH: f32 = 100.0;
+pub const ARENA_HEIGHT: f32 = 100.;
+pub const ARENA_WIDTH: f32 = 100.;
+pub const SPAWN_PERIOD: f32 = 1.;
 
 #[derive(Default)]
 pub struct Game {
+    passenger_spawn_timer: f32,
+    num_of_spawned: i32,
     sprite_sheet_handle: Option<Handle<SpriteSheet>>,
     font_handle: Option<FontHandle>,
 }
@@ -23,6 +26,8 @@ impl SimpleState for Game {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
+        self.passenger_spawn_timer = SPAWN_PERIOD;
+        self.num_of_spawned = 0;
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
         self.font_handle.replace(load_font(world));
 
@@ -38,8 +43,20 @@ impl SimpleState for Game {
             self.sprite_sheet_handle.clone().unwrap(),
             self.font_handle.clone().unwrap(),
         );
-        initialize_passengers(world);
         initialize_camera(world);
+    }
+
+    fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
+        {
+            let time = data.world.read_resource::<Time>();
+            self.passenger_spawn_timer -= time.delta_seconds();
+        }
+        if self.passenger_spawn_timer <= 0. {
+            spawn_passenger(data.world, self.num_of_spawned);
+            self.passenger_spawn_timer = SPAWN_PERIOD;
+            self.num_of_spawned += 1;
+        }
+        Trans::None
     }
 }
 

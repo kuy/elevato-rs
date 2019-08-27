@@ -2,8 +2,10 @@ use amethyst::{
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
 };
+use rand::Rng;
 
 use crate::cargo::Cargo;
+use crate::floor_door::NUM_OF_FLOORS;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Status {
@@ -51,11 +53,14 @@ impl Component for Passenger {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub fn initialize_passengers(world: &mut World) {
-    world.create_entity().with(Passenger::new(0, 2, 4)).build();
-    world.create_entity().with(Passenger::new(1, 3, 2)).build();
-    world.create_entity().with(Passenger::new(2, 6, 1)).build();
-    world.create_entity().with(Passenger::new(3, 5, 2)).build();
-    world.create_entity().with(Passenger::new(4, 0, 7)).build();
-    world.create_entity().with(Passenger::new(5, 1, 3)).build();
+pub fn spawn_passenger(world: &mut World, n: i32) {
+    let mut rng = rand::thread_rng();
+    world
+        .create_entity()
+        .with(Passenger::new(
+            n,
+            rng.gen_range(0, NUM_OF_FLOORS),
+            rng.gen_range(0, NUM_OF_FLOORS),
+        ))
+        .build();
 }
