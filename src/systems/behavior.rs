@@ -61,6 +61,8 @@ impl<'s> System<'s> for BehaviorSystem {
                             );
                             passenger.status = Status::Moving(dest);
                             cargo.count += 1;
+                            cargo.remove_from_enter(&passenger);
+                            cargo.update_status();
 
                             println!(
                                 "[Passenger #{}] Request #{} in cargo #{}",
@@ -89,6 +91,8 @@ impl<'s> System<'s> for BehaviorSystem {
                             );
                             passenger.status = Status::Idle;
                             cargo.count -= 1;
+                            cargo.remove_from_leave(&passenger);
+                            cargo.update_status();
 
                             break;
                         }

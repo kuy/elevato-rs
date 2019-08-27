@@ -58,9 +58,4 @@ pub fn initialize_passengers(world: &mut World) {
     world.create_entity().with(Passenger::new(3, 5, 2)).build();
     world.create_entity().with(Passenger::new(4, 0, 7)).build();
     world.create_entity().with(Passenger::new(5, 1, 3)).build();
-
-    /*
-    world.create_entity().with(Passenger::new(0, 0, 2)).build();
-    world.create_entity().with(Passenger::new(1, 2, 0)).build();
-    */
 }

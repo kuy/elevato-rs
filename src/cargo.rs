@@ -7,6 +7,8 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
+use crate::passenger::Passenger;
+
 pub const NUM_OF_CARGOS: i32 = 3;
 pub const CARGO_HEIGHT: f32 = 12.0;
 pub const CARGO_WIDTH: f32 = 8.0;
@@ -45,22 +47,11 @@ impl Cargo {
         }
     }
 
-    pub fn move_to(&mut self, target: &i32) {
-        let dir = if target > &self.floor {
-            Direction::Up
-        } else if target < &self.floor {
-            Direction::Down
-        } else {
-            return; // Noop
-        };
-        self.status = Status::Moving(dir);
-    }
-
-    pub fn remove_from_enter(&mut self, floor: &i32) {
+    pub fn remove_from_enter(&mut self, passenger: &Passenger) {
         let mut i = 0;
         while i != self.enter.len() {
-            let (_, target, _) = &self.enter[i];
-            if target == floor {
+            let (id, _, _) = &self.enter[i];
+            if id == &passenger.id {
                 self.enter.remove(i);
             } else {
                 i += 1;
@@ -68,11 +59,11 @@ impl Cargo {
         }
     }
 
-    pub fn remove_from_leave(&mut self, floor: &i32) {
+    pub fn remove_from_leave(&mut self, passenger: &Passenger) {
         let mut i = 0;
         while i != self.leave.len() {
-            let (_, target) = &self.leave[i];
-            if target == floor {
+            let (id, _) = &self.leave[i];
+            if id == &passenger.id {
                 self.leave.remove(i);
             } else {
                 i += 1;
@@ -80,27 +71,44 @@ impl Cargo {
         }
     }
 
-    pub fn arrived_floor_in_enter(&self) -> Option<i32> {
-        if let Some((_, target, _)) = self.enter.first() {
-            if target == &self.floor {
-                Some(*target)
-            } else {
-                None
+    pub fn update_status(&mut self) {
+        if self.enter.is_empty() && self.leave.is_empty() {
+            if let Status::Moving(_) = self.status {
+                println!("[Cargo #{}] Stopped at #{}", self.id, self.floor);
+                self.status = Status::Stopped;
             }
-        } else {
-            None
-        }
-    }
-
-    pub fn arrived_floor_in_leave(&self) -> Option<i32> {
-        if let Some((_, target)) = self.leave.first() {
-            if target == &self.floor {
-                Some(*target)
-            } else {
-                None
+        } else if !self.leave.is_empty() {
+            for (_, target) in &self.leave {
+                let dir = if target > &self.floor {
+                    Direction::Up
+                } else if target < &self.floor {
+                    Direction::Down
+                } else {
+                    continue; // Here!
+                };
+                println!(
+                    "[Cargo #{}] Move {:?} at #{} [leave]",
+                    self.id, dir, self.floor
+                );
+                self.status = Status::Moving(dir);
+                break;
             }
-        } else {
-            None
+        } else if !self.enter.is_empty() {
+            for (_, target, _) in &self.enter {
+                let dir = if target > &self.floor {
+                    Direction::Up
+                } else if target < &self.floor {
+                    Direction::Down
+                } else {
+                    continue; // Here!
+                };
+                println!(
+                    "[Cargo #{}] Move {:?} at #{} [enter]",
+                    self.id, dir, self.floor
+                );
+                self.status = Status::Moving(dir);
+                break;
+            }
         }
     }
 }

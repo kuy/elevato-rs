@@ -47,7 +47,7 @@ pub fn initialize_floor_doors(
         );
 
         let ui_transform = UiTransform::new(
-            format!("floor-{}", floor),
+            format!("door-{}", floor),
             Anchor::BottomLeft,
             Anchor::Middle,
             0.,
