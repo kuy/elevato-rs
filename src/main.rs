@@ -1,5 +1,6 @@
 use amethyst::{
     core::transform::TransformBundle,
+    input::StringBindings,
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -8,7 +9,6 @@ use amethyst::{
     },
     ui::{RenderUi, UiBundle},
     utils::application_root_dir,
-    input::StringBindings,
 };
 
 mod cargo;
@@ -30,6 +30,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::ControlSystem, "control_system", &[])
         .with(systems::BehaviorSystem, "behavior_system", &[])
         .with(systems::UpdateFloorSystem, "floor_system", &[])
+        .with(systems::WaitingSystem, "waiting_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

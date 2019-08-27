@@ -9,9 +9,9 @@ use amethyst::{
 
 use crate::cargo::CARGO_HEIGHT;
 
-const NUM_OF_FLOORS: i32 = 10;
-pub const FLOOR_HEIGHT: f32 = 1.0;
-pub const FLOOR_WIDTH: f32 = 8.0;
+const NUM_OF_FLOORS: i32 = 8;
+pub const FLOOR_HEIGHT: f32 = 1.;
+pub const FLOOR_WIDTH: f32 = 8.;
 
 pub struct FloorDoor {
     pub floor: i32,
@@ -28,7 +28,11 @@ impl Component for FloorDoor {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub fn initialize_floor_doors(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
+pub fn initialize_floor_doors(
+    world: &mut World,
+    sprite_sheet: Handle<SpriteSheet>,
+    font: FontHandle,
+) {
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
         sprite_number: 1,
@@ -46,7 +50,7 @@ pub fn initialize_floor_doors(world: &mut World, sprite_sheet: Handle<SpriteShee
             format!("floor-{}", floor),
             Anchor::BottomLeft,
             Anchor::Middle,
-            40.,
+            0.,
             0.,
             1.,
             50.,

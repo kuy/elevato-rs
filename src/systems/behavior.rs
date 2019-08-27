@@ -1,14 +1,19 @@
 use amethyst::ecs::{Join, System, WriteStorage};
 
 use crate::cargo::{Cargo, Direction};
+use crate::floor_door::FloorDoor;
 use crate::passenger::{Passenger, Status};
 
 pub struct BehaviorSystem;
 
 impl<'s> System<'s> for BehaviorSystem {
-    type SystemData = (WriteStorage<'s, Passenger>, WriteStorage<'s, Cargo>);
+    type SystemData = (
+        WriteStorage<'s, Passenger>,
+        WriteStorage<'s, Cargo>,
+        WriteStorage<'s, FloorDoor>,
+    );
 
-    fn run(&mut self, (mut passengers, mut cargoes): Self::SystemData) {
+    fn run(&mut self, (mut passengers, mut cargoes, mut doors): Self::SystemData) {
         for (passenger,) in (&mut passengers,).join() {
             match passenger.status {
                 Status::GoTo(dest) => {
@@ -31,6 +36,13 @@ impl<'s> System<'s> for BehaviorSystem {
                     }
 
                     passenger.status = Status::Waiting(dest);
+
+                    for (door,) in (&mut doors,).join() {
+                        if door.floor == passenger.floor {
+                            door.waiting += 1;
+                            break;
+                        }
+                    }
                 }
 
                 Status::Waiting(dest) => {
@@ -45,6 +57,13 @@ impl<'s> System<'s> for BehaviorSystem {
 
                             println!("[Passenger #{}] Request #{}", passenger.id, dest);
                             cargo.leave.push(dest);
+
+                            for (door,) in (&mut doors,).join() {
+                                if door.floor == passenger.floor {
+                                    door.waiting -= 1;
+                                    break;
+                                }
+                            }
                         }
                     }
                 }
