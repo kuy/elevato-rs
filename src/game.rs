@@ -12,7 +12,7 @@ use crate::passenger::spawn_passenger;
 
 pub const ARENA_HEIGHT: f32 = 100.;
 pub const ARENA_WIDTH: f32 = 100.;
-pub const SPAWN_PERIOD: f32 = 2.;
+pub const SPAWN_PERIOD: f32 = 1.5;
 
 #[derive(Default)]
 pub struct Game {

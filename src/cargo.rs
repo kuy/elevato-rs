@@ -9,10 +9,10 @@ use amethyst::{
 
 use crate::passenger::Passenger;
 
-pub const NUM_OF_CARGOS: i32 = 6;
-pub const CARGO_HEIGHT: f32 = 12.0;
-pub const CARGO_WIDTH: f32 = 8.0;
-pub const CARGO_VELOCITY: f32 = 10.0;
+pub const NUM_OF_CARGOS: i32 = 8;
+pub const CARGO_HEIGHT: f32 = 12.;
+pub const CARGO_WIDTH: f32 = 8.;
+pub const CARGO_VELOCITY: f32 = 10.;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -44,6 +44,20 @@ impl Cargo {
             enter: vec![],
             leave: vec![],
             count: 0,
+        }
+    }
+
+    pub fn is_stopped(&self) -> bool {
+        match self.status {
+            Status::Stopped => true,
+            _ => false,
+        }
+    }
+
+    pub fn is_moving(&self) -> bool {
+        match self.status {
+            Status::Moving(_) => true,
+            _ => false,
         }
     }
 

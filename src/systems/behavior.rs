@@ -54,7 +54,7 @@ impl<'s> System<'s> for BehaviorSystem {
 
                 Status::Waiting(dest) => {
                     for (cargo,) in (&mut cargoes,).join() {
-                        if passenger.requested(&cargo) {
+                        if passenger.requested(&cargo) && cargo.is_stopped() {
                             println!(
                                 "[Passenger #{}] Enter Cargo #{} at #{}",
                                 passenger.id, cargo.id, passenger.floor
@@ -84,7 +84,7 @@ impl<'s> System<'s> for BehaviorSystem {
 
                 Status::Moving(dest) => {
                     for (cargo,) in (&mut cargoes,).join() {
-                        if passenger.arrived(&cargo) {
+                        if passenger.arrived(&cargo) && cargo.is_stopped() {
                             println!(
                                 "[Passenger #{}] Leave Cargo #{} at #{}",
                                 passenger.id, cargo.id, dest
