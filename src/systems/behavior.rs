@@ -18,8 +18,8 @@ impl<'s> System<'s> for BehaviorSystem {
             match passenger.status {
                 Status::GoTo(dest) => {
                     println!(
-                        "[Passenger #{}] Go to #{} from #{}",
-                        passenger.id, dest, passenger.floor
+                        "[Passenger #{}] #{} => #{}",
+                        passenger.id, passenger.floor, dest
                     );
 
                     for (cargo,) in (&mut cargoes,).join() {
@@ -35,7 +35,7 @@ impl<'s> System<'s> for BehaviorSystem {
                         };
 
                         println!(
-                            "[Passenger #{}] Request cargo #{} at #{}",
+                            "[Passenger #{}] Request Cargo #{} at #{}",
                             passenger.id, cargo.id, passenger.floor
                         );
                         cargo.enter.push(req);
@@ -56,7 +56,7 @@ impl<'s> System<'s> for BehaviorSystem {
                     for (cargo,) in (&mut cargoes,).join() {
                         if passenger.requested(&cargo) {
                             println!(
-                                "[Passenger #{}] Enter cargo #{} at #{}",
+                                "[Passenger #{}] Enter Cargo #{} at #{}",
                                 passenger.id, cargo.id, passenger.floor
                             );
                             passenger.status = Status::Moving(dest);
@@ -65,7 +65,7 @@ impl<'s> System<'s> for BehaviorSystem {
                             cargo.update_status();
 
                             println!(
-                                "[Passenger #{}] Request #{} in cargo #{}",
+                                "[Passenger #{}] Request #{} in Cargo #{}",
                                 passenger.id, dest, cargo.id
                             );
                             cargo.leave.push((passenger.id, dest));
@@ -86,7 +86,7 @@ impl<'s> System<'s> for BehaviorSystem {
                     for (cargo,) in (&mut cargoes,).join() {
                         if passenger.arrived(&cargo) {
                             println!(
-                                "[Passenger #{}] Leave cargo #{} at #{}",
+                                "[Passenger #{}] Leave Cargo #{} at #{}",
                                 passenger.id, cargo.id, dest
                             );
                             passenger.status = Status::Idle;
