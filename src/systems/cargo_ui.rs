@@ -29,7 +29,7 @@ impl<'s> System<'s> for CargoUISystem {
             let t = cargo_pos.translation();
             ui_pos.local_x = t.x * ratio;
             ui_pos.local_y = (t.y + OFFSET) * ratio;
-            ui_text.text = cargo.count.to_string();
+            ui_text.text = cargo.queue.len().to_string();
         }
     }
 }

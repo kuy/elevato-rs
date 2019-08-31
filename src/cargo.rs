@@ -12,7 +12,7 @@ use crate::passenger::Passenger;
 pub const NUM_OF_CARGOS: i32 = 5;
 pub const CARGO_HEIGHT: f32 = 12.;
 pub const CARGO_WIDTH: f32 = 8.;
-pub const CARGO_VELOCITY: f32 = 10.;
+pub const CARGO_VELOCITY: f32 = 5.;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Direction {
@@ -30,9 +30,7 @@ pub struct Cargo {
     pub id: i32,
     pub floor: i32,
     pub status: Status,
-    pub enter: Vec<(i32, i32, Direction)>, // (passenger id, requested floor, dir)
-    pub leave: Vec<(i32, i32)>,            // (passenger id, dest floor)
-    pub count: i32,
+    pub queue: Vec<(i32, i32)>, // (passenger, floor)
 }
 
 impl Cargo {
@@ -41,22 +39,13 @@ impl Cargo {
             id,
             floor: 0,
             status: Status::Stopped,
-            enter: vec![],
-            leave: vec![],
-            count: 0,
+            queue: vec![],
         }
     }
 
     pub fn is_stopped(&self) -> bool {
         match self.status {
             Status::Stopped => true,
-            _ => false,
-        }
-    }
-
-    pub fn is_moving(&self) -> bool {
-        match self.status {
-            Status::Moving(_) => true,
             _ => false,
         }
     }
@@ -79,24 +68,12 @@ impl Cargo {
         };
     }
 
-    pub fn remove_from_enter(&mut self, passenger: &Passenger) {
-        let mut i = 0;
-        while i != self.enter.len() {
-            let (id, _, _) = &self.enter[i];
-            if id == &passenger.id {
-                self.enter.remove(i);
-            } else {
-                i += 1;
-            }
-        }
-    }
-
     pub fn remove_from_leave(&mut self, passenger: &Passenger) {
         let mut i = 0;
-        while i != self.leave.len() {
-            let (id, _) = &self.leave[i];
+        while i != self.queue.len() {
+            let (id, _) = &self.queue[i];
             if id == &passenger.id {
-                self.leave.remove(i);
+                self.queue.remove(i);
             } else {
                 i += 1;
             }
@@ -114,10 +91,10 @@ pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>, 
         sprite_number: 0,
     };
 
-    for n in 1..(NUM_OF_CARGOS + 1) {
+    for n in 0..NUM_OF_CARGOS {
         let mut transform = Transform::default();
         transform.set_translation_xyz(
-            (n as f32) * CARGO_WIDTH + CARGO_WIDTH * 0.5,
+            ((n + 1) as f32) * CARGO_WIDTH + CARGO_WIDTH * 0.5,
             CARGO_HEIGHT * 0.5,
             0.0,
         );

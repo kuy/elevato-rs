@@ -12,7 +12,7 @@ use amethyst::{
 };
 
 mod cargo;
-mod floor_door;
+mod gate;
 mod game;
 mod passenger;
 mod systems;
@@ -26,14 +26,15 @@ fn main() -> amethyst::Result<()> {
     let display_config_path = app_root.join("config").join("display.ron");
 
     let game_data = GameDataBuilder::default()
-        .with(systems::CargoUISystem, "elevating_system", &[])
+        .with(systems::CargoUISystem, "cargo_ui_system", &[])
         .with(systems::BehaviorSystem, "behavior_system", &[])
         .with(
             systems::ControlSystem,
             "control_system",
             &["behavior_system"],
         )
-        .with(systems::WaitingSystem, "waiting_system", &[])
+        .with(systems::GateUISystem, "gate_ui_system", &[])
+        .with(systems::GuideSystem, "guide_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

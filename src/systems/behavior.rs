@@ -1,7 +1,7 @@
 use amethyst::ecs::{Join, System, WriteStorage};
 
 use crate::cargo::{Cargo, Direction, NUM_OF_CARGOS};
-use crate::floor_door::FloorDoor;
+use crate::gate::Gate;
 use crate::passenger::{Passenger, Status};
 
 pub struct BehaviorSystem;
@@ -10,10 +10,10 @@ impl<'s> System<'s> for BehaviorSystem {
     type SystemData = (
         WriteStorage<'s, Passenger>,
         WriteStorage<'s, Cargo>,
-        WriteStorage<'s, FloorDoor>,
+        WriteStorage<'s, Gate>,
     );
 
-    fn run(&mut self, (mut passengers, mut cargoes, mut doors): Self::SystemData) {
+    fn run(&mut self, (mut passengers, mut cargoes, mut gates): Self::SystemData) {
         for (passenger,) in (&mut passengers,).join() {
             match passenger.status {
                 Status::GoTo(dest) => {
@@ -22,9 +22,13 @@ impl<'s> System<'s> for BehaviorSystem {
                         passenger.id, passenger.floor, dest
                     );
 
-                    for (cargo,) in (&mut cargoes,).join() {
-                        // TODO: Passenger should behave more intelligent
-                        if passenger.id % NUM_OF_CARGOS != cargo.id % NUM_OF_CARGOS {
+                    for (gate,) in (&mut gates,).join() {
+                        if gate.floor != passenger.floor {
+                            continue;
+                        }
+
+                        // TODO: More efficient algorithm for cargo selection
+                        if passenger.id % NUM_OF_CARGOS != gate.cargo % NUM_OF_CARGOS {
                             continue;
                         }
 
@@ -37,50 +41,14 @@ impl<'s> System<'s> for BehaviorSystem {
                         };
 
                         println!(
-                            "[Passenger #{}] Request Cargo #{} at #{}",
-                            passenger.id, cargo.id, passenger.floor
+                            "[Passenger #{}] Request Gate #{} at #{}",
+                            passenger.id, gate.cargo, passenger.floor
                         );
-                        cargo.enter.push(req);
+                        gate.queue.push(req);
                         break;
                     }
 
                     passenger.status = Status::Waiting(dest);
-
-                    for (door,) in (&mut doors,).join() {
-                        if door.floor == passenger.floor {
-                            door.waiting += 1;
-                            break;
-                        }
-                    }
-                }
-
-                Status::Waiting(dest) => {
-                    for (cargo,) in (&mut cargoes,).join() {
-                        if passenger.requested(&cargo) && cargo.is_stopped() {
-                            println!(
-                                "[Passenger #{}] Enter Cargo #{} at #{}",
-                                passenger.id, cargo.id, passenger.floor
-                            );
-                            passenger.status = Status::Moving(dest);
-                            cargo.count += 1;
-                            cargo.remove_from_enter(&passenger);
-
-                            println!(
-                                "[Passenger #{}] Request #{} in Cargo #{}",
-                                passenger.id, dest, cargo.id
-                            );
-                            cargo.leave.push((passenger.id, dest));
-
-                            for (door,) in (&mut doors,).join() {
-                                if door.floor == passenger.floor {
-                                    door.waiting -= 1;
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                    }
                 }
 
                 Status::Moving(dest) => {
@@ -91,7 +59,6 @@ impl<'s> System<'s> for BehaviorSystem {
                                 passenger.id, cargo.id, dest
                             );
                             passenger.status = Status::Idle;
-                            cargo.count -= 1;
                             cargo.remove_from_leave(&passenger);
 
                             break;

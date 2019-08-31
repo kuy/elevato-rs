@@ -7,12 +7,12 @@ use amethyst::{
 };
 
 use crate::cargo::initialize_cargoes;
-use crate::floor_door::initialize_floor_doors;
-use crate::passenger::spawn_passenger;
+use crate::gate::initialize_gates;
+use crate::passenger::{initialize_passengers, spawn_passenger};
 
 pub const ARENA_HEIGHT: f32 = 100.;
 pub const ARENA_WIDTH: f32 = 100.;
-pub const SPAWN_PERIOD: f32 = 1.;
+pub const SPAWN_PERIOD: f32 = 3.;
 
 #[derive(Default)]
 pub struct Game {
@@ -36,11 +36,12 @@ impl SimpleState for Game {
             self.sprite_sheet_handle.clone().unwrap(),
             self.font_handle.clone().unwrap(),
         );
-        initialize_floor_doors(
+        initialize_gates(
             world,
             self.sprite_sheet_handle.clone().unwrap(),
             self.font_handle.clone().unwrap(),
         );
+        initialize_passengers(world);
         initialize_camera(world);
     }
 
