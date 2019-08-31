@@ -9,7 +9,7 @@ use amethyst::{
 
 use crate::passenger::Passenger;
 
-pub const NUM_OF_CARGOS: i32 = 8;
+pub const NUM_OF_CARGOS: i32 = 5;
 pub const CARGO_HEIGHT: f32 = 12.;
 pub const CARGO_WIDTH: f32 = 8.;
 pub const CARGO_VELOCITY: f32 = 10.;
@@ -23,7 +23,7 @@ pub enum Direction {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Status {
     Stopped,
-    Moving(Direction),
+    Moving((Direction, i32)),
 }
 
 pub struct Cargo {
@@ -61,6 +61,24 @@ impl Cargo {
         }
     }
 
+    pub fn velocity(&self) -> f32 {
+        match self.status {
+            Status::Moving((Direction::Up, _)) => CARGO_VELOCITY,
+            Status::Moving((Direction::Down, _)) => -CARGO_VELOCITY,
+            _ => 0.,
+        }
+    }
+
+    pub fn direction_for(&self, dest: &i32) -> Option<Direction> {
+        return if dest > &self.floor {
+            Some(Direction::Up)
+        } else if dest < &self.floor {
+            Some(Direction::Down)
+        } else {
+            None
+        };
+    }
+
     pub fn remove_from_enter(&mut self, passenger: &Passenger) {
         let mut i = 0;
         while i != self.enter.len() {
@@ -81,47 +99,6 @@ impl Cargo {
                 self.leave.remove(i);
             } else {
                 i += 1;
-            }
-        }
-    }
-
-    pub fn update_status(&mut self) {
-        if self.enter.is_empty() && self.leave.is_empty() {
-            if let Status::Moving(_) = self.status {
-                println!("[Cargo #{}] Stopped at #{}", self.id, self.floor);
-                self.status = Status::Stopped;
-            }
-        } else if !self.leave.is_empty() {
-            for (_, target) in &self.leave {
-                let dir = if target > &self.floor {
-                    Direction::Up
-                } else if target < &self.floor {
-                    Direction::Down
-                } else {
-                    continue; // Here!
-                };
-                println!(
-                    "[Cargo #{}] Move {:?} at #{} [leave]",
-                    self.id, dir, self.floor
-                );
-                self.status = Status::Moving(dir);
-                break;
-            }
-        } else if !self.enter.is_empty() {
-            for (_, target, _) in &self.enter {
-                let dir = if target > &self.floor {
-                    Direction::Up
-                } else if target < &self.floor {
-                    Direction::Down
-                } else {
-                    continue; // Here!
-                };
-                println!(
-                    "[Cargo #{}] Move {:?} at #{} [enter]",
-                    self.id, dir, self.floor
-                );
-                self.status = Status::Moving(dir);
-                break;
             }
         }
     }

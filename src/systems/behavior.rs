@@ -23,9 +23,11 @@ impl<'s> System<'s> for BehaviorSystem {
                     );
 
                     for (cargo,) in (&mut cargoes,).join() {
+                        // TODO: Passenger should behave more intelligent
                         if passenger.id % NUM_OF_CARGOS != cargo.id % NUM_OF_CARGOS {
                             continue;
                         }
+
                         let req = if dest > passenger.floor {
                             (passenger.id, passenger.floor, Direction::Up)
                         } else if dest < passenger.floor {
@@ -62,7 +64,6 @@ impl<'s> System<'s> for BehaviorSystem {
                             passenger.status = Status::Moving(dest);
                             cargo.count += 1;
                             cargo.remove_from_enter(&passenger);
-                            cargo.update_status();
 
                             println!(
                                 "[Passenger #{}] Request #{} in Cargo #{}",
@@ -92,7 +93,6 @@ impl<'s> System<'s> for BehaviorSystem {
                             passenger.status = Status::Idle;
                             cargo.count -= 1;
                             cargo.remove_from_leave(&passenger);
-                            cargo.update_status();
 
                             break;
                         }
