@@ -11,7 +11,7 @@ use crate::cargo::CARGO_HEIGHT;
 
 pub const NUM_OF_FLOORS: i32 = 5;
 pub const FLOOR_HEIGHT: f32 = 1.;
-pub const FLOOR_WIDTH: f32 = 8.;
+pub const FLOOR_WIDTH: f32 = 9.;
 
 pub struct Floor {
     pub floor: i32,
@@ -30,7 +30,7 @@ impl Component for Floor {
 pub fn initialize_floors(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
-        sprite_number: 1,
+        sprite_number: 0,
     };
 
     for floor in 0..NUM_OF_FLOORS {

@@ -9,7 +9,7 @@ use amethyst::{
 
 pub const NUM_OF_CARGOS: i32 = 5;
 pub const CARGO_HEIGHT: f32 = 12.;
-pub const CARGO_WIDTH: f32 = 8.;
+pub const CARGO_WIDTH: f32 = 9.;
 pub const CARGO_VELOCITY: f32 = 5.;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -71,7 +71,7 @@ impl Component for Cargo {
 pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
     let sprite_render = SpriteRender {
         sprite_sheet: sprite_sheet.clone(),
-        sprite_number: 0,
+        sprite_number: 1,
     };
 
     for n in 0..NUM_OF_CARGOS {
