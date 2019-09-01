@@ -13,8 +13,8 @@ use amethyst::{
 
 mod cargo;
 mod floor;
-mod gate;
 mod game;
+mod gate;
 mod passenger;
 mod systems;
 
@@ -34,6 +34,7 @@ fn main() -> amethyst::Result<()> {
             "control_system",
             &["behavior_system"],
         )
+        .with(systems::DoorSystem, "door_system", &[])
         .with(systems::FloorUISystem, "floor_ui_system", &[])
         .with(systems::GuideSystem, "guide_system", &[])
         .with_bundle(
