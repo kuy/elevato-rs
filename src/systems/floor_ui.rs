@@ -30,6 +30,11 @@ impl<'s> System<'s> for FloorUISystem {
                 .filter(|(gate,)| floor.floor == gate.floor)
                 .fold(0, |acc, (gate,)| acc + gate.queue.len());
             counter.text = total.to_string();
+            counter.color = if total == 0 {
+                [0.1, 0.1, 0.1, 1.]
+            } else {
+                [1., 1., 1., 1.]
+            };
             transform.local_x = FLOOR_WIDTH * 0.5 * ratio;
             transform.local_y =
                 ((floor.floor as f32) * CARGO_HEIGHT + FLOOR_HEIGHT * 0.5 + OFFSET) * ratio;
