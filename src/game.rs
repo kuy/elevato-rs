@@ -5,6 +5,7 @@ use amethyst::{
     renderer::{Camera, ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{FontHandle, TtfFormat},
 };
+use std::collections::HashMap;
 
 use crate::cargo::initialize_cargoes;
 use crate::floor::initialize_floors;
@@ -13,7 +14,7 @@ use crate::passenger::spawn_passenger;
 
 pub const ARENA_HEIGHT: f32 = 100.;
 pub const ARENA_WIDTH: f32 = 100.;
-pub const SPAWN_PERIOD: f32 = 3.;
+pub const SPAWN_PERIOD: f32 = 2.;
 
 #[derive(Default)]
 pub struct Game {
@@ -32,6 +33,7 @@ impl SimpleState for Game {
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
         self.font_handle.replace(load_font(world));
 
+        initialize_profile(world);
         initialize_floors(
             world,
             self.sprite_sheet_handle.clone().unwrap(),
@@ -97,4 +99,13 @@ fn initialize_camera(world: &mut World) {
         .with(Camera::standard_2d(ARENA_WIDTH, ARENA_HEIGHT))
         .with(transform)
         .build();
+}
+
+fn initialize_profile(world: &mut World) {
+    let store: HashMap<i32, (f64, bool)> = HashMap::new();
+    world.add_resource(store);
+
+    let mut stats: HashMap<&'static str, f64> = HashMap::new();
+    stats.insert("average", 0.);
+    world.add_resource(stats);
 }

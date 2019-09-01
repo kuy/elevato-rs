@@ -27,7 +27,12 @@ fn main() -> amethyst::Result<()> {
     let display_config_path = app_root.join("config").join("display.ron");
 
     let game_data = GameDataBuilder::default()
-        .with(systems::BehaviorSystem, "behavior_system", &[])
+        .with(systems::ProfileSystem, "profile_system", &[])
+        .with(
+            systems::BehaviorSystem,
+            "behavior_system",
+            &["profile_system"],
+        )
         .with(systems::CargoUISystem, "cargo_ui_system", &[])
         .with(
             systems::ControlSystem,

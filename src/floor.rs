@@ -9,7 +9,7 @@ use amethyst::{
 
 use crate::cargo::CARGO_HEIGHT;
 
-pub const NUM_OF_FLOORS: i32 = 5;
+pub const NUM_OF_FLOORS: i32 = 8;
 pub const FLOOR_HEIGHT: f32 = 1.;
 pub const FLOOR_WIDTH: f32 = 9.;
 
