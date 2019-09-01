@@ -1,17 +1,11 @@
 use amethyst::{
-    assets::Handle,
-    core::transform::Transform,
     ecs::prelude::{Component, DenseVecStorage},
     prelude::*,
-    renderer::{SpriteRender, SpriteSheet},
-    ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
-use crate::cargo::{Direction, CARGO_HEIGHT, NUM_OF_CARGOS};
+use crate::cargo::{Direction, NUM_OF_CARGOS};
+use crate::floor::NUM_OF_FLOORS;
 
-pub const NUM_OF_FLOORS: i32 = 5;
-pub const GATE_HEIGHT: f32 = 1.;
-pub const GATE_WIDTH: f32 = 8.;
 pub const BOARDING_TIME: f32 = 1.;
 
 #[derive(Debug, PartialEq)]
@@ -42,44 +36,12 @@ impl Component for Gate {
     type Storage = DenseVecStorage<Self>;
 }
 
-pub fn initialize_gates(world: &mut World, sprite_sheet: Handle<SpriteSheet>, font: FontHandle) {
-    let sprite_render = SpriteRender {
-        sprite_sheet: sprite_sheet.clone(),
-        sprite_number: 1,
-    };
-
+pub fn initialize_gates(world: &mut World) {
     for cargo in 0..NUM_OF_CARGOS {
         for floor in 0..NUM_OF_FLOORS {
-            let mut transform = Transform::default();
-            transform.set_translation_xyz(
-                GATE_WIDTH * 0.5,
-                (floor as f32) * CARGO_HEIGHT + GATE_HEIGHT * 0.5,
-                0.0,
-            );
-
-            let ui_transform = UiTransform::new(
-                format!("gate-{}", floor),
-                Anchor::BottomLeft,
-                Anchor::Middle,
-                0.,
-                0.,
-                1.,
-                50.,
-                25.,
-            );
-
             world
                 .create_entity()
-                .with(sprite_render.clone())
                 .with(Gate::new(cargo, floor))
-                .with(transform)
-                .with(UiText::new(
-                    font.clone(),
-                    "0".to_string(),
-                    [1., 1., 1., 1.],
-                    30.,
-                ))
-                .with(ui_transform)
                 .build();
         }
     }

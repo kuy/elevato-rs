@@ -7,6 +7,7 @@ use amethyst::{
 };
 
 use crate::cargo::initialize_cargoes;
+use crate::floor::initialize_floors;
 use crate::gate::initialize_gates;
 use crate::passenger::{initialize_passengers, spawn_passenger};
 
@@ -31,15 +32,15 @@ impl SimpleState for Game {
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
         self.font_handle.replace(load_font(world));
 
+        initialize_floors(world,self.sprite_sheet_handle.clone().unwrap(),
+            self.font_handle.clone().unwrap(),);
         initialize_cargoes(
             world,
             self.sprite_sheet_handle.clone().unwrap(),
             self.font_handle.clone().unwrap(),
         );
         initialize_gates(
-            world,
-            self.sprite_sheet_handle.clone().unwrap(),
-            self.font_handle.clone().unwrap(),
+            world
         );
         initialize_passengers(world);
         initialize_camera(world);

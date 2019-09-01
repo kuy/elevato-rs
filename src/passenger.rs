@@ -5,7 +5,7 @@ use amethyst::{
 use rand::Rng;
 
 use crate::cargo::Cargo;
-use crate::gate::NUM_OF_FLOORS;
+use crate::floor::NUM_OF_FLOORS;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Status {

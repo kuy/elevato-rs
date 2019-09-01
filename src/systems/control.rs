@@ -53,7 +53,7 @@ impl<'s> System<'s> for ControlSystem {
                     if let (Some((_, dest)), Some(_)) = (cargo.queue.first(), gate) {
                         if let Some(dir) = cargo.direction_for(dest) {
                             println!(
-                                "[Cargo #{}] Move {:?} to {} with {} passenger(s)",
+                                "[Cargo #{}] Move {:?} to #{} with {} passenger(s)",
                                 cargo.id,
                                 dir,
                                 dest,
@@ -73,7 +73,7 @@ impl<'s> System<'s> for ControlSystem {
 
                         if let Some(gate) = gate {
                             if let Some(dir) = cargo.direction_for(&gate.floor) {
-                                println!("[Cargo #{}] Move {:?} to {}", cargo.id, dir, gate.floor);
+                                println!("[Cargo #{}] Move {:?} to #{}", cargo.id, dir, gate.floor);
                                 cargo.status = CargoStatus::Moving((dir, gate.floor));
                             }
                         } else {
