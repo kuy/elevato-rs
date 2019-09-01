@@ -4,7 +4,6 @@ use amethyst::{
 };
 use rand::Rng;
 
-use crate::cargo::Cargo;
 use crate::floor::NUM_OF_FLOORS;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -29,15 +28,6 @@ impl Passenger {
             floor,
         }
     }
-
-    pub fn arrived(&self, cargo: &Cargo) -> bool {
-        for (id, dest) in &cargo.queue {
-            if self.id == *id && *dest == cargo.floor {
-                return true;
-            }
-        }
-        return false;
-    }
 }
 
 impl Component for Passenger {
@@ -53,21 +43,6 @@ fn gen_from_and_to() -> (i32, i32) {
             return (from, to);
         }
     }
-}
-
-pub fn initialize_passengers(world: &mut World) {
-    world
-        .create_entity()
-        .with(Passenger::new(100, 0, 4))
-        .build();
-    world
-        .create_entity()
-        .with(Passenger::new(101, 0, 4))
-        .build();
-    world
-        .create_entity()
-        .with(Passenger::new(102, 0, 4))
-        .build();
 }
 
 pub fn spawn_passenger(world: &mut World, n: i32) {

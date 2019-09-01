@@ -7,9 +7,7 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
-use crate::passenger::Passenger;
-
-pub const NUM_OF_CARGOS: i32 = 2;
+pub const NUM_OF_CARGOS: i32 = 5;
 pub const CARGO_HEIGHT: f32 = 12.;
 pub const CARGO_WIDTH: f32 = 8.;
 pub const CARGO_VELOCITY: f32 = 5.;
@@ -43,13 +41,6 @@ impl Cargo {
         }
     }
 
-    pub fn is_stopped(&self) -> bool {
-        match self.status {
-            Status::Stopped => true,
-            _ => false,
-        }
-    }
-
     pub fn velocity(&self) -> f32 {
         match self.status {
             Status::Moving((Direction::Up, _)) => CARGO_VELOCITY,
@@ -68,16 +59,8 @@ impl Cargo {
         };
     }
 
-    pub fn remove_from_leave(&mut self, passenger: &Passenger) {
-        let mut i = 0;
-        while i != self.queue.len() {
-            let (id, _) = &self.queue[i];
-            if id == &passenger.id {
-                self.queue.remove(i);
-            } else {
-                i += 1;
-            }
-        }
+    pub fn has_alighting(&self) -> bool {
+        self.queue.iter().any(|(_, floor)| floor == &self.floor)
     }
 }
 

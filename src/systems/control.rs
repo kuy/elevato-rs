@@ -37,21 +37,20 @@ impl<'s> System<'s> for ControlSystem {
             // Update status
             match &cargo.status {
                 CargoStatus::Stopped => {
-                    // [1] Transport passengers to requested floor
-                    // Find matched gate
-                    let mut gate: Option<&Gate> = None;
-                    for (g,) in (&gates,).join() {
-                        if g.cargo == cargo.id
-                            && g.floor == cargo.floor
-                            && g.status == GateStatus::Close
-                        {
-                            gate = Some(g);
-                            break;
+                    if let Some((_, dest)) = cargo.queue.first() {
+                        // [1] Transport passengers to requested floor
+                        let mut gate = None;
+                        for (g,) in (&gates,).join() {
+                            if g.cargo == cargo.id
+                                && g.floor == cargo.floor
+                                && g.status == GateStatus::Close
+                            {
+                                gate = Some(g);
+                                break;
+                            }
                         }
-                    }
 
-                    if let (Some((_, dest)), Some(_)) = (cargo.queue.first(), gate) {
-                        if let Some(dir) = cargo.direction_for(dest) {
+                        if let (Some(dir), Some(_)) = (cargo.direction_for(dest), gate) {
                             println!(
                                 "[Cargo #{}] Move {:?} to #{} with {} passenger(s)",
                                 cargo.id,
@@ -61,17 +60,20 @@ impl<'s> System<'s> for ControlSystem {
                             );
                             cargo.status = CargoStatus::Moving((dir, dest.clone()));
                         }
-                    } else {
-                        // [2] Find and move to waiting floor
-                        let mut gate: Option<&Gate> = None;
+                    } else if !cargo.has_alighting() {
+                        // [2] Find next dest floor to move
+                        let mut gate = (None, None); // current, next
                         for (g,) in (&gates,).join() {
-                            if g.cargo == cargo.id && !g.queue.is_empty() {
-                                gate = Some(g);
-                                break;
+                            if g.cargo == cargo.id && g.status == GateStatus::Close {
+                                if g.floor == cargo.floor {
+                                    gate.0 = Some(g);
+                                } else if !g.queue.is_empty() {
+                                    gate.1 = Some(g);
+                                }
                             }
                         }
 
-                        if let Some(gate) = gate {
+                        if let (Some(_), Some(gate)) = gate {
                             if let Some(dir) = cargo.direction_for(&gate.floor) {
                                 println!("[Cargo #{}] Move {:?} to #{}", cargo.id, dir, gate.floor);
                                 cargo.status = CargoStatus::Moving((dir, gate.floor));

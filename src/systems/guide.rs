@@ -30,7 +30,8 @@ impl<'s> System<'s> for GuideSystem {
 
                 match gate.status {
                     GateStatus::Close => {
-                        if !gate.queue.is_empty() {
+                        // Open if there are boarding/alighting passengers
+                        if cargo.has_alighting() || !gate.queue.is_empty() {
                             println!("[Gate #{}] Open at #{}", gate.cargo, gate.floor);
                             gate.status = GateStatus::Open(BOARDING_TIME);
                         }
@@ -41,11 +42,54 @@ impl<'s> System<'s> for GuideSystem {
                         if 0. < rest {
                             gate.status = GateStatus::Open(rest);
                         } else {
-                            if gate.queue.is_empty() {
-                                // Finish boarding passengers
+                            if !cargo.has_alighting() && gate.queue.is_empty() {
+                                // [1] Close if no more boarding/alighting passengers
                                 println!("[Gate #{}] Close at #{}", gate.cargo, gate.floor);
                                 gate.status = GateStatus::Close;
-                            } else {
+                            } else if cargo.has_alighting() {
+                                // [2] Alighting passengers first
+
+                                // Remove an alighting passenger from cargo
+                                let mut i = 0;
+                                let mut alighted = None;
+                                while i != cargo.queue.len() {
+                                    let (_, floor) = &cargo.queue[i];
+                                    if &cargo.floor == floor {
+                                        let (id, _) = cargo.queue.remove(i);
+                                        alighted = Some(id);
+                                        break;
+                                    } else {
+                                        i += 1;
+                                    }
+                                }
+
+                                // Update passenger's status
+                                if let Some(id) = alighted {
+                                    for (passenger,) in (&mut passengers,).join() {
+                                        if id != passenger.id {
+                                            continue;
+                                        }
+
+                                        if let PassengerStatus::Moving(dest) = passenger.status {
+                                            cargo.queue.push((id, dest));
+                                            passenger.status = PassengerStatus::Idle;
+                                            println!(
+                                                "[Passenger #{}] Leave Cargo #{} at #{}",
+                                                id, cargo.id, cargo.floor
+                                            );
+                                            break;
+                                        } else {
+                                            // TODO: Should panic?
+                                        }
+                                    }
+                                } else {
+                                    // TODO: Should panic?
+                                }
+
+                                // Continue boarding passenger
+                                gate.status = GateStatus::Open(BOARDING_TIME);
+                            } else if !gate.queue.is_empty() {
+                                // [3] Boarding passengers second
                                 let (id, _, _) = gate.queue.remove(0);
                                 for (passenger,) in (&mut passengers,).join() {
                                     if id != passenger.id {
@@ -60,6 +104,8 @@ impl<'s> System<'s> for GuideSystem {
                                             id, cargo.id, cargo.floor
                                         );
                                         break;
+                                    } else {
+                                        // TODO: Should panic?
                                     }
                                 }
 
