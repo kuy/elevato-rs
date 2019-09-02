@@ -25,30 +25,21 @@ impl<'s> System<'s> for BehaviorSystem {
                     // Find nearest cargo
                     let mut nearest = None; // (cargo, dist)
                     for (cargo,) in (&cargos,).join() {
-                        match &cargo.status {
-                            CargoStatus::Stopped => {
-                                let distance = (passenger.floor - cargo.floor).abs();
-                                if let Some((_, dist)) = nearest {
-                                    if distance < dist {
-                                        nearest = Some((cargo.id, distance));
-                                    }
-                                } else {
+                        let satisfied = match &cargo.status {
+                            CargoStatus::Stopped => true,
+                            CargoStatus::Moving((dir, _)) => 
+                                (cargo.floor < passenger.floor && *dir == Direction::Up)
+                                    || (cargo.floor > passenger.floor && *dir == Direction::Down)
+                        };
+
+                        if satisfied {
+                            let distance = (passenger.floor - cargo.floor).abs();
+                            if let Some((_, dist)) = nearest {
+                                if distance < dist {
                                     nearest = Some((cargo.id, distance));
                                 }
-                            }
-                            CargoStatus::Moving((dir, _)) => {
-                                if (cargo.floor < passenger.floor && *dir == Direction::Up)
-                                    || (cargo.floor > passenger.floor && *dir == Direction::Down)
-                                {
-                                    let distance = (passenger.floor - cargo.floor).abs();
-                                    if let Some((_, dist)) = nearest {
-                                        if distance < dist {
-                                            nearest = Some((cargo.id, distance));
-                                        }
-                                    } else {
-                                        nearest = Some((cargo.id, distance));
-                                    }
-                                }
+                            } else {
+                                nearest = Some((cargo.id, distance));
                             }
                         }
                     }
