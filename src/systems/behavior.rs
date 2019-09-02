@@ -1,50 +1,82 @@
-use amethyst::ecs::{Join, System, WriteStorage};
+use amethyst::ecs::{Join, ReadStorage, System, WriteStorage};
 
-use crate::cargo::{Direction, NUM_OF_CARGOS};
+use crate::cargo::{Cargo, Direction, Status as CargoStatus};
 use crate::gate::Gate;
-use crate::passenger::{Passenger, Status};
+use crate::passenger::{Passenger, Status as PassengerStatus};
 
 pub struct BehaviorSystem;
 
 impl<'s> System<'s> for BehaviorSystem {
-    type SystemData = (WriteStorage<'s, Passenger>, WriteStorage<'s, Gate>);
+    type SystemData = (
+        WriteStorage<'s, Passenger>,
+        WriteStorage<'s, Gate>,
+        ReadStorage<'s, Cargo>,
+    );
 
-    fn run(&mut self, (mut passengers, mut gates): Self::SystemData) {
+    fn run(&mut self, (mut passengers, mut gates, cargos): Self::SystemData) {
         for (passenger,) in (&mut passengers,).join() {
             match passenger.status {
-                Status::GoTo(dest) => {
+                PassengerStatus::GoTo(dest) => {
                     println!(
                         "[Passenger #{}] #{} => #{}",
                         passenger.id, passenger.floor, dest
                     );
 
-                    for (gate,) in (&mut gates,).join() {
-                        if gate.floor != passenger.floor {
-                            continue;
+                    // Find nearest cargo
+                    let mut nearest = None; // (cargo, dist)
+                    for (cargo,) in (&cargos,).join() {
+                        match &cargo.status {
+                            CargoStatus::Stopped => {
+                                let distance = (passenger.floor - cargo.floor).abs();
+                                if let Some((_, dist)) = nearest {
+                                    if distance < dist {
+                                        nearest = Some((cargo.id, distance));
+                                    }
+                                } else {
+                                    nearest = Some((cargo.id, distance));
+                                }
+                            }
+                            CargoStatus::Moving((dir, _)) => {
+                                if (cargo.floor < passenger.floor && *dir == Direction::Up)
+                                    || (cargo.floor > passenger.floor && *dir == Direction::Down)
+                                {
+                                    let distance = (passenger.floor - cargo.floor).abs();
+                                    if let Some((_, dist)) = nearest {
+                                        if distance < dist {
+                                            nearest = Some((cargo.id, distance));
+                                        }
+                                    } else {
+                                        nearest = Some((cargo.id, distance));
+                                    }
+                                }
+                            }
                         }
-
-                        // TODO: More efficient algorithm for cargo selection
-                        if passenger.id % NUM_OF_CARGOS != gate.cargo % NUM_OF_CARGOS {
-                            continue;
-                        }
-
-                        let req = if dest > passenger.floor {
-                            (passenger.id, passenger.floor, Direction::Up)
-                        } else if dest < passenger.floor {
-                            (passenger.id, passenger.floor, Direction::Down)
-                        } else {
-                            continue; // You're there :)
-                        };
-
-                        println!(
-                            "[Passenger #{}] Request Gate #{} at #{}",
-                            passenger.id, gate.cargo, passenger.floor
-                        );
-                        gate.queue.push(req);
-                        break;
                     }
 
-                    passenger.status = Status::Waiting(dest);
+                    if let Some((cargo, _)) = nearest {
+                        for (gate,) in (&mut gates,).join() {
+                            if gate.floor != passenger.floor || gate.cargo != cargo {
+                                continue;
+                            }
+
+                            let req = if dest > passenger.floor {
+                                (passenger.id, passenger.floor, Direction::Up)
+                            } else if dest < passenger.floor {
+                                (passenger.id, passenger.floor, Direction::Down)
+                            } else {
+                                continue; // Ummm, panic?
+                            };
+
+                            println!(
+                                "[Passenger #{}] Request Gate #{} at #{}",
+                                passenger.id, gate.cargo, passenger.floor
+                            );
+                            gate.queue.push(req);
+                            break;
+                        }
+
+                        passenger.status = PassengerStatus::Waiting(dest);
+                    }
                 }
 
                 _ => (),
