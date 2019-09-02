@@ -7,7 +7,7 @@ use amethyst::{
     ui::{Anchor, FontHandle, UiText, UiTransform},
 };
 
-pub const NUM_OF_CARGOS: i32 = 5;
+pub const NUM_OF_CARGOES: i32 = 5;
 pub const CARGO_HEIGHT: f32 = 12.;
 pub const CARGO_WIDTH: f32 = 9.;
 pub const CARGO_VELOCITY: f32 = 5.;
@@ -74,7 +74,7 @@ pub fn initialize_cargoes(world: &mut World, sprite_sheet: Handle<SpriteSheet>, 
         sprite_number: 1,
     };
 
-    for n in 0..NUM_OF_CARGOS {
+    for n in 0..NUM_OF_CARGOES {
         let mut transform = Transform::default();
         transform.set_translation_xyz(
             ((n + 1) as f32) * CARGO_WIDTH + CARGO_WIDTH * 0.5,

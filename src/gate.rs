@@ -3,7 +3,7 @@ use amethyst::{
     prelude::*,
 };
 
-use crate::cargo::{Direction, NUM_OF_CARGOS};
+use crate::cargo::{Direction, NUM_OF_CARGOES};
 use crate::floor::NUM_OF_FLOORS;
 
 pub const BOARDING_TIME: f32 = 1.;
@@ -37,12 +37,9 @@ impl Component for Gate {
 }
 
 pub fn initialize_gates(world: &mut World) {
-    for cargo in 0..NUM_OF_CARGOS {
+    for cargo in 0..NUM_OF_CARGOES {
         for floor in 0..NUM_OF_FLOORS {
-            world
-                .create_entity()
-                .with(Gate::new(cargo, floor))
-                .build();
+            world.create_entity().with(Gate::new(cargo, floor)).build();
         }
     }
 }

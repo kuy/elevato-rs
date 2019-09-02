@@ -15,12 +15,12 @@ impl<'s> System<'s> for DoorSystem {
         ReadStorage<'s, Gate>,
     );
 
-    fn run(&mut self, (mut renders, cargos, gates): Self::SystemData) {
-        for (render, cargo) in (&mut renders, &cargos).join() {
+    fn run(&mut self, (mut renders, cargoes, gates): Self::SystemData) {
+        for (render, cargo) in (&mut renders, &cargoes).join() {
             match cargo.status {
                 CargoStatus::Moving(_) => {
                     render.sprite_number = 1; // Close
-                },
+                }
                 CargoStatus::Stopped => {
                     let mut gate = None;
                     for (g,) in (&gates,).join() {
@@ -36,7 +36,7 @@ impl<'s> System<'s> for DoorSystem {
                             GateStatus::Open(_) => 2,
                         };
                     }
-                },
+                }
             }
         }
     }

@@ -13,7 +13,7 @@ impl<'s> System<'s> for BehaviorSystem {
         ReadStorage<'s, Cargo>,
     );
 
-    fn run(&mut self, (mut passengers, mut gates, cargos): Self::SystemData) {
+    fn run(&mut self, (mut passengers, mut gates, cargoes): Self::SystemData) {
         for (passenger,) in (&mut passengers,).join() {
             match passenger.status {
                 PassengerStatus::GoTo(dest) => {
@@ -24,12 +24,13 @@ impl<'s> System<'s> for BehaviorSystem {
 
                     // Find nearest cargo
                     let mut nearest = None; // (cargo, dist)
-                    for (cargo,) in (&cargos,).join() {
+                    for (cargo,) in (&cargoes,).join() {
                         let satisfied = match &cargo.status {
                             CargoStatus::Stopped => true,
-                            CargoStatus::Moving((dir, _)) => 
+                            CargoStatus::Moving((dir, _)) => {
                                 (cargo.floor < passenger.floor && *dir == Direction::Up)
                                     || (cargo.floor > passenger.floor && *dir == Direction::Down)
+                            }
                         };
 
                         if satisfied {

@@ -17,8 +17,8 @@ impl<'s> System<'s> for GuideSystem {
         Read<'s, Time>,
     );
 
-    fn run(&mut self, (mut cargos, mut passengers, mut gates, time): Self::SystemData) {
-        for (cargo,) in (&mut cargos,).join() {
+    fn run(&mut self, (mut cargoes, mut passengers, mut gates, time): Self::SystemData) {
+        for (cargo,) in (&mut cargoes,).join() {
             if CargoStatus::Stopped != cargo.status {
                 continue;
             }
