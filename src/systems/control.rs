@@ -85,7 +85,7 @@ impl<'s> System<'s> for ControlSystem {
                 }
 
                 CargoStatus::Moving((_, dest)) => {
-                    if dest == &cargo.floor {
+                    if dest == &cargo.floor || cargo.has_alighting() {
                         println!("[Cargo #{}] Stopped at #{}", cargo.id, cargo.floor);
                         cargo.status = CargoStatus::Stopped;
                     }
