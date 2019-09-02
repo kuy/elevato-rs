@@ -85,7 +85,19 @@ impl<'s> System<'s> for ControlSystem {
                 }
 
                 CargoStatus::Moving((_, dest)) => {
-                    if dest == &cargo.floor || cargo.has_alighting() {
+                    // Find gates which have passengers
+                    let mut found = false;
+                    for (gate,) in (&gates,).join() {
+                        if gate.cargo == cargo.id
+                            && gate.floor == cargo.floor
+                            && !gate.queue.is_empty()
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if found || dest == &cargo.floor || cargo.has_alighting() {
                         println!("[Cargo #{}] Stopped at #{}", cargo.id, cargo.floor);
                         cargo.status = CargoStatus::Stopped;
                     }
