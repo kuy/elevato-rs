@@ -27,9 +27,10 @@ impl<'s> System<'s> for BehaviorSystem {
                     for (cargo,) in (&cargoes,).join() {
                         let satisfied = match &cargo.status {
                             CargoStatus::Stopped => true,
-                            CargoStatus::Moving((dir, _)) => {
-                                (cargo.floor < passenger.floor && *dir == Direction::Up)
-                                    || (cargo.floor > passenger.floor && *dir == Direction::Down)
+                            CargoStatus::Moving(_) => {
+                                (cargo.floor < passenger.floor && cargo.dir == Direction::Up)
+                                    || (cargo.floor > passenger.floor
+                                        && cargo.dir == Direction::Down)
                             }
                         };
 

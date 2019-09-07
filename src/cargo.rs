@@ -21,12 +21,13 @@ pub enum Direction {
 #[derive(Debug, PartialEq, Eq)]
 pub enum Status {
     Stopped,
-    Moving((Direction, i32)),
+    Moving(i32),
 }
 
 pub struct Cargo {
     pub id: i32,
     pub floor: i32,
+    pub dir: Direction,
     pub status: Status,
     pub queue: Vec<(i32, i32)>, // (passenger, floor)
 }
@@ -36,16 +37,20 @@ impl Cargo {
         Cargo {
             id,
             floor: 0,
+            dir: Direction::Up,
             status: Status::Stopped,
             queue: vec![],
         }
     }
 
     pub fn velocity(&self) -> f32 {
-        match self.status {
-            Status::Moving((Direction::Up, _)) => CARGO_VELOCITY,
-            Status::Moving((Direction::Down, _)) => -CARGO_VELOCITY,
-            _ => 0.,
+        if self.status == Status::Stopped {
+            0.
+        } else {
+            match self.dir {
+                Direction::Up => CARGO_VELOCITY,
+                Direction::Down => -CARGO_VELOCITY,
+            }
         }
     }
 

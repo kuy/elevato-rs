@@ -18,13 +18,13 @@ impl<'s> System<'s> for ControlSystem {
 
     fn run(&mut self, (mut cargoes, mut positions, gates, time): Self::SystemData) {
         for (cargo, pos) in (&mut cargoes, &mut positions).join() {
-            if let CargoStatus::Moving((dir, _)) = &cargo.status {
+            if let CargoStatus::Moving(_) = &cargo.status {
                 // Update position in the World
                 let velocity = cargo.velocity();
                 pos.prepend_translation_y(velocity * time.delta_seconds());
 
                 // Update current floor
-                let anchor = match dir {
+                let anchor = match cargo.dir {
                     Direction::Up => pos.translation().y - CARGO_HEIGHT * 0.5,
                     Direction::Down => pos.translation().y + CARGO_HEIGHT * 0.5,
                 };
@@ -58,7 +58,8 @@ impl<'s> System<'s> for ControlSystem {
                                 dest,
                                 cargo.queue.len()
                             );
-                            cargo.status = CargoStatus::Moving((dir, dest.clone()));
+                            cargo.status = CargoStatus::Moving(dest.clone());
+                            cargo.dir = dir;
                         }
                     } else if !cargo.has_alighting() {
                         // [2] Find next dest floor to move
@@ -76,7 +77,8 @@ impl<'s> System<'s> for ControlSystem {
                         if let (Some(_), Some(gate)) = gate {
                             if let Some(dir) = cargo.direction_for(&gate.floor) {
                                 println!("[Cargo #{}] Move {:?} to #{}", cargo.id, dir, gate.floor);
-                                cargo.status = CargoStatus::Moving((dir, gate.floor));
+                                cargo.status = CargoStatus::Moving(gate.floor);
+                                cargo.dir = dir;
                             }
                         } else {
                             // TODO: Move to default position?
@@ -84,7 +86,7 @@ impl<'s> System<'s> for ControlSystem {
                     }
                 }
 
-                CargoStatus::Moving((_, dest)) => {
+                CargoStatus::Moving(dest) => {
                     // Find gates which have passengers
                     let mut found = false;
                     for (gate,) in (&gates,).join() {
