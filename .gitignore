@@ -1,5 +1,6 @@
 # Unwanted files
 target
+imgui.ini
 
 # Backup files
 .DS_Store

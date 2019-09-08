@@ -10,6 +10,7 @@ use amethyst::{
     ui::{RenderUi, UiBundle},
     utils::application_root_dir,
 };
+use amethyst_imgui::RenderImgui;
 
 mod cargo;
 mod floor;
@@ -42,12 +43,14 @@ fn main() -> amethyst::Result<()> {
         .with(systems::DoorSystem, "door_system", &[])
         .with(systems::FloorUISystem, "floor_ui_system", &[])
         .with(systems::GuideSystem, "guide_system", &[])
+        .with(systems::ImguiSystem, "imgui_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
                     RenderToWindow::from_config_path(display_config_path)
                         .with_clear([0.0, 0.0, 0.0, 1.0]),
                 )
+                .with_plugin(RenderImgui::default())
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderUi::default()),
         )?
