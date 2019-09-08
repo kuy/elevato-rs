@@ -34,10 +34,12 @@ impl<'s> System<'s> for ProfileSystem {
                                 store.insert(passenger.id, (duration, true));
                                 done.push(duration);
                                 dirty = true;
+                                /*
                                 println!(
                                     "@@@ Passenger #{}: Done in {} seconds",
                                     passenger.id, duration
                                 );
+                                */
                             }
                             Some((duration, true)) => {
                                 done.push(duration.clone());
@@ -54,11 +56,13 @@ impl<'s> System<'s> for ProfileSystem {
         stats.insert("average", average);
 
         if dirty {
+            /*
             println!(
                 "@@@ AVG: {}, {}",
                 average,
                 time.absolute_real_time_seconds()
             );
+            */
         }
     }
 }
