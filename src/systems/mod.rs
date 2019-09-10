@@ -14,4 +14,4 @@ pub use self::door::DoorSystem;
 pub use self::floor_ui::FloorUISystem;
 pub use self::guide::GuideSystem;
 pub use self::imgui::ImguiSystem;
-pub use self::profile::ProfileSystem;
+pub use self::profile::{Profile, ProfileSystem};

@@ -5,12 +5,12 @@ use amethyst::{
     renderer::{Camera, ImageFormat, SpriteSheet, SpriteSheetFormat, Texture},
     ui::{FontHandle, TtfFormat},
 };
-use std::collections::HashMap;
 
 use crate::cargo::initialize_cargoes;
 use crate::floor::initialize_floors;
 use crate::gate::initialize_gates;
 use crate::passenger::spawn_passenger;
+use crate::systems::Profile;
 
 pub const ARENA_HEIGHT: f32 = 100.;
 pub const ARENA_WIDTH: f32 = 100.;
@@ -102,10 +102,6 @@ fn initialize_camera(world: &mut World) {
 }
 
 fn initialize_profile(world: &mut World) {
-    let store: HashMap<i32, (f64, bool)> = HashMap::new();
-    world.add_resource(store);
-
-    let mut stats: HashMap<&'static str, f64> = HashMap::new();
-    stats.insert("average", 0.);
-    world.add_resource(stats);
+    let average = Profile::default();
+    world.insert(average);
 }
