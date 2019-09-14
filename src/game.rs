@@ -14,25 +14,39 @@ use crate::systems::Profile;
 
 pub const ARENA_HEIGHT: f32 = 100.;
 pub const ARENA_WIDTH: f32 = 100.;
-pub const SPAWN_PERIOD: f32 = 2.;
+const DEFAULT_PAX_PER_MIN: i32 = 30;
 
 #[derive(Default)]
 pub struct Game {
-    passenger_spawn_timer: f32,
-    num_of_spawned: i32,
+    pub num_of_spawned: i32,
     sprite_sheet_handle: Option<Handle<SpriteSheet>>,
     font_handle: Option<FontHandle>,
+}
+
+#[derive(Default)]
+pub struct Control {
+    pub pax_per_min: i32,
+    spawn_timer: f32,
+}
+
+impl Control {
+    fn new() -> Self {
+        Self {
+            pax_per_min: DEFAULT_PAX_PER_MIN,
+            spawn_timer: calc_period(DEFAULT_PAX_PER_MIN),
+        }
+    }
 }
 
 impl SimpleState for Game {
     fn on_start(&mut self, data: StateData<'_, GameData<'_, '_>>) {
         let world = data.world;
 
-        self.passenger_spawn_timer = SPAWN_PERIOD;
         self.num_of_spawned = 0;
         self.sprite_sheet_handle.replace(load_sprite_sheet(world));
         self.font_handle.replace(load_font(world));
 
+        initialize_control(world);
         initialize_profile(world);
         initialize_floors(
             world,
@@ -50,16 +64,28 @@ impl SimpleState for Game {
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
         {
+            let mut control = data.world.write_resource::<Control>();
             let time = data.world.read_resource::<Time>();
-            self.passenger_spawn_timer -= time.delta_seconds();
+            control.spawn_timer -= time.delta_seconds();
         }
-        if self.passenger_spawn_timer <= 0. {
+        let timer = {
+            let control = data.world.read_resource::<Control>();
+            control.spawn_timer
+        };
+        if timer <= 0. {
             spawn_passenger(data.world, self.num_of_spawned);
-            self.passenger_spawn_timer = SPAWN_PERIOD;
+            {
+                let mut control = data.world.write_resource::<Control>();
+                control.spawn_timer = calc_period(control.pax_per_min);
+            }
             self.num_of_spawned += 1;
         }
         Trans::None
     }
+}
+
+fn calc_period(pax: i32) -> f32 {
+    60.0f32 / (pax as f32)
 }
 
 fn load_sprite_sheet(world: &mut World) -> Handle<SpriteSheet> {
@@ -104,4 +130,9 @@ fn initialize_camera(world: &mut World) {
 fn initialize_profile(world: &mut World) {
     let average = Profile::default();
     world.insert(average);
+}
+
+fn initialize_control(world: &mut World) {
+    let control = Control::new();
+    world.insert(control);
 }
