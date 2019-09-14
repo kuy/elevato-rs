@@ -43,7 +43,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::DoorSystem, "door_system", &[])
         .with(systems::FloorUISystem, "floor_ui_system", &[])
         .with(systems::GuideSystem, "guide_system", &[])
-        .with(systems::ImguiSystem, "imgui_system", &[])
+        .with(systems::UiStatsSystem, "imgui_system", &[])
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(

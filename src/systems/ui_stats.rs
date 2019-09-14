@@ -3,9 +3,9 @@ use amethyst_imgui::imgui::{im_str, Condition};
 
 use crate::systems::Profile;
 
-pub struct ImguiSystem;
+pub struct UiStatsSystem;
 
-impl<'s> System<'s> for ImguiSystem {
+impl<'s> System<'s> for UiStatsSystem {
     type SystemData = (Read<'s, Profile>,);
 
     fn run(&mut self, (profile,): Self::SystemData) {
