@@ -1,6 +1,6 @@
 use amethyst::{
     core::transform::TransformBundle,
-    input::StringBindings,
+    input::{InputBundle, StringBindings},
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -45,6 +45,7 @@ fn main() -> amethyst::Result<()> {
         .with(systems::GuideSystem, "guide_system", &[])
         .with(systems::UiStatsSystem, "ui_stats_system", &[])
         .with(systems::UiControlSystem, "ui_control_system", &[])
+        .with_bundle(InputBundle::<StringBindings>::default())?
         .with_bundle(
             RenderingBundle::<DefaultBackend>::new()
                 .with_plugin(
@@ -53,7 +54,7 @@ fn main() -> amethyst::Result<()> {
                 )
                 .with_plugin(RenderFlat2D::default())
                 .with_plugin(RenderUi::default())
-                .with_plugin(RenderImgui::default()),
+                .with_plugin(RenderImgui::<StringBindings>::default()),
         )?
         .with_bundle(TransformBundle::new())?
         .with_bundle(UiBundle::<StringBindings>::new())?;

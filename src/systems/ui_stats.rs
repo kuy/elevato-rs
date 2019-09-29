@@ -1,5 +1,5 @@
 use amethyst::ecs::{Read, System};
-use amethyst_imgui::imgui::{im_str, Condition};
+use amethyst_imgui::imgui::{im_str, Condition, Window};
 
 use crate::systems::Profile;
 
@@ -10,10 +10,9 @@ impl<'s> System<'s> for UiStatsSystem {
 
     fn run(&mut self, (profile,): Self::SystemData) {
         amethyst_imgui::with(|ui| {
-            let _ = ui
-                .window(im_str!("Stats"))
+            Window::new(im_str!("Stats"))
                 .size([150., 100.], Condition::FirstUseEver)
-                .build(|| {
+                .build(ui, || {
                     // Time
                     ui.text(format!("Time: {:.2}s", profile.elapsed));
 

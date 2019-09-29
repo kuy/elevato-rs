@@ -1,14 +1,11 @@
 [package]
 name = "elevators"
-version = "0.1.0"
-authors = []
+version = "0.0.0"
+authors = ["Yuki Kodama <endflow.net@gmail.com>"]
 edition = "2018"
+publish = false
 
 [dependencies]
 amethyst = { path = "../amethyst", features = ["metal", "shader-compiler"] }
-amethyst-imgui = { path = "../amethyst-imgui", features = ["metal"] }
-rand = "0.7.0"
-
-[features]
-empty = ["amethyst/empty"]
-metal = ["amethyst/metal"]
+amethyst-imgui = { path = "../amethyst-imgui" }
+rand = "0.7.2"
