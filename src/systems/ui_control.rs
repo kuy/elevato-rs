@@ -13,7 +13,8 @@ impl<'s> System<'s> for UiControlSystem {
             Window::new(im_str!("Control"))
                 .size([150., 100.], Condition::FirstUseEver)
                 .build(ui, || {
-                    Slider::new(im_str!("Pax/min"), 1..=300).build(ui, &mut control.pax_per_min);
+                    control.dirty = Slider::new(im_str!("Pax/min"), 1..=300)
+                        .build(ui, &mut control.pax_per_min);
                 });
         });
     }

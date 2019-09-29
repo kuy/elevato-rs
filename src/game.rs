@@ -27,6 +27,7 @@ pub struct Game {
 pub struct Control {
     pub pax_per_min: i32,
     spawn_timer: f32,
+    pub dirty: bool,
 }
 
 impl Control {
@@ -34,6 +35,7 @@ impl Control {
         Self {
             pax_per_min: DEFAULT_PAX_PER_MIN,
             spawn_timer: calc_period(DEFAULT_PAX_PER_MIN),
+            dirty: false,
         }
     }
 }
@@ -63,22 +65,31 @@ impl SimpleState for Game {
     }
 
     fn update(&mut self, data: &mut StateData<'_, GameData<'_, '_>>) -> SimpleTrans {
-        {
-            let mut control = data.world.write_resource::<Control>();
-            let time = data.world.read_resource::<Time>();
-            control.spawn_timer -= time.delta_seconds();
-        }
-        let timer = {
+        let dirty = {
             let control = data.world.read_resource::<Control>();
-            control.spawn_timer
+            control.dirty
         };
-        if timer <= 0. {
-            spawn_passenger(data.world, self.num_of_spawned);
+        if dirty {
+            let mut control = data.world.write_resource::<Control>();
+            control.spawn_timer = calc_period(control.pax_per_min);
+        } else {
             {
                 let mut control = data.world.write_resource::<Control>();
-                control.spawn_timer = calc_period(control.pax_per_min);
+                let time = data.world.read_resource::<Time>();
+                control.spawn_timer -= time.delta_seconds();
             }
-            self.num_of_spawned += 1;
+            let timer = {
+                let control = data.world.read_resource::<Control>();
+                control.spawn_timer
+            };
+            if timer <= 0. {
+                spawn_passenger(data.world, self.num_of_spawned);
+                {
+                    let mut control = data.world.write_resource::<Control>();
+                    control.spawn_timer = calc_period(control.pax_per_min);
+                }
+                self.num_of_spawned += 1;
+            }
         }
         Trans::None
     }
